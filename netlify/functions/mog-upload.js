@@ -3,20 +3,7 @@
 // the upload in Netlify Blobs and hand back a URL served by mog-img.
 // POST { image: "data:image/jpeg;base64,..." } -> { url }
 
-const { getStore } = require("@netlify/blobs");
-
-// Blobs auto-configures on CI builds; on CLI deploys it needs siteID + token.
-// If a NETLIFY_BLOBS_TOKEN env var is set we use it, otherwise fall back to auto.
-function uploadsStore() {
-  if (process.env.NETLIFY_BLOBS_TOKEN) {
-    return getStore({
-      name: "pv-uploads",
-      siteID: process.env.BLOBS_SITE_ID || "d5b36d73-d273-4485-bd6f-5ee0d24fd0cf",
-      token: process.env.NETLIFY_BLOBS_TOKEN,
-    });
-  }
-  return getStore("pv-uploads");
-}
+const { getStore, connectLambda } = require("@netlify/blobs");
 
 exports.handler = async (event) => {
   const respond = (code, body) => ({
@@ -26,6 +13,9 @@ exports.handler = async (event) => {
   });
 
   if (event.httpMethod !== "POST") return respond(405, { error: "POST only" });
+
+  // Lambda-compat functions get the Blobs context from the event, not an env var.
+  try { connectLambda(event); } catch (e) {}
 
   let body = {};
   try { body = JSON.parse(event.body || "{}"); } catch (e) {}
@@ -38,7 +28,7 @@ exports.handler = async (event) => {
   if (buf.length > 6 * 1024 * 1024) return respond(413, { error: "image too large (max 6MB)" });
 
   try {
-    const store = uploadsStore();
+    const store = getStore("pv-uploads");
     const key = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
     await store.set(key, buf, { metadata: { contentType } });
     const host = (event.headers && (event.headers.host || event.headers.Host)) || "";
