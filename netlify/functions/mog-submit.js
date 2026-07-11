@@ -20,14 +20,16 @@ function shadesUrl(event) {
 }
 
 const PROMPT =
-  "Put the exact wraparound Pit Viper sport sunglasses from the second image onto the face of the subject in the " +
-  "first image. The shades have a single large curved shield lens with a blue-to-purple mirror finish and a black " +
-  "frame. Fit them naturally over the subject's eyes, following the angle and perspective of their head, sitting " +
-  "correctly on the nose and ears. Keep the subject's face, expression, species, skin/fur color, hair and identity " +
-  "fully recognizable — only add the sunglasses, do not restyle the person. Recompose as a clean square profile " +
-  "picture, subject centered, chest-up. Keep the vibe bold and cool. Photorealistic where the source is a photo, " +
-  "matching the art style where the source is a drawing. Absolutely no text, no letters, no numbers, no watermarks, " +
-  "no logos anywhere.";
+  "Take the EXACT sunglasses shown in the SECOND image and place them onto the face of the character in the FIRST " +
+  "image. Copy the second image's sunglasses precisely: a single one-piece wraparound shield lens that spans across " +
+  "both eyes with NO separate lenses and no visible bridge, a mirrored finish that fades from bright blue on the " +
+  "left to purple on the right, a slim matte-black top frame and short black arms, and the tall pointed shield shape " +
+  "that comes down to a sharp point between the eyes. Do NOT invent a different style of glasses, do not use round " +
+  "or square lenses — match the reference shape, proportions and colors as closely as possible. Fit them naturally " +
+  "over the eyes, following the exact angle, tilt and perspective of the head, resting on the nose and ears at the " +
+  "right size. Change NOTHING else: keep the character's face, expression, species, colors, linework and art style " +
+  "exactly as in the first image, and keep the same framing and background. Output only the edited image. Absolutely " +
+  "no text, letters, numbers, watermarks or logos anywhere.";
 
 function getKey() {
   if (process.env.NANOBANANA_API_KEY) return process.env.NANOBANANA_API_KEY.trim();

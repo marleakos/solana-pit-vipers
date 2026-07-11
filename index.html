@@ -284,6 +284,7 @@
   <a class="brand" href="#"><img class="brandimg" src="img/pitviper.png" alt="Solana Pit Vipers"><span class="wm">Pit&nbsp;Vipers</span></a>
   <div class="links">
     <a href="#lore">The Lore</a>
+    <a href="#gallery">The Wall</a>
     <a href="#mirror" class="cta">Put On The Vipers</a>
   </div>
 </nav>
@@ -362,6 +363,21 @@
     <div class="tenet reveal"><div class="rom">III.</div><div class="txt">Mog every other chain.<small>The glasses were built to outshine them all. No contest.</small></div></div>
     <div class="tenet reveal"><div class="rom">IV.</div><div class="txt">Not a coin. A cult.<small>A movement, not a market cap. The floor is belief.</small></div></div>
     <div class="tenet reveal"><div class="rom">V.</div><div class="txt">Put them on. Join us.<small>One upload and you're one of us. Mog everyone outside of SOL.</small></div></div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="sec-head reveal"><span class="sec-idx">[ 02 / THE WALL ]</span><h2>The <span class="holo">Wall</span></h2></div>
+  <p class="sec-sub reveal">// every soul that put the Pit Vipers on. your generated pfps are saved right here in your browser — download them anytime.</p>
+  <div class="gallery-grid" id="galleryGrid"></div>
+  <div class="gallery-empty" id="galleryEmpty">
+    <svg viewBox="0 0 128 48" width="70"><use href="#shades" fill="url(#holoGrad)"/></svg>
+    <p>the wall is empty. head to the Mirror above, put the Pit Vipers on — your new pfp lands here.</p>
+    <a class="btn btn-out" href="#mirror">↑ To The Mirror</a>
+  </div>
+  <div class="gallery-foot" id="galleryFoot" style="display:none">
+    <span class="mono" id="galleryCount"></span>
+    <button class="gallery-clear mono" id="galleryClear">✕ clear the wall</button>
   </div>
 </section>
 
@@ -453,6 +469,31 @@ function copyCA(){
   tick(); setInterval(tick,30000);
 })();
 
+/* ================= THE WALL — saved gallery ================= */
+window.MogWall=(function(){
+  const KEY='pvWall_v1',CAP=40;
+  const grid=document.getElementById('galleryGrid'),empty=document.getElementById('galleryEmpty'),foot=document.getElementById('galleryFoot'),count=document.getElementById('galleryCount'),clearBtn=document.getElementById('galleryClear');
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+  function render(){
+    const items=load();grid.innerHTML='';
+    if(!items.length){empty.style.display='block';foot.style.display='none';grid.style.display='none';return;}
+    empty.style.display='none';grid.style.display='grid';foot.style.display='flex';
+    count.textContent=items.length+(items.length===1?' pfp saved':' pfps saved');
+    items.forEach(function(it){
+      const a=document.createElement('a');a.className='gcard';a.href=it.url;a.target='_blank';a.rel='noopener';a.title='open full size';
+      const img=document.createElement('img');img.src=it.url;img.loading='lazy';img.alt='pit vipers pfp';
+      const dl=document.createElement('span');dl.className='dl';dl.textContent='⭳ open / save';
+      const x=document.createElement('button');x.className='x';x.textContent='✕';x.title='remove';
+      x.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();save(load().filter(function(o){return o.ts!==it.ts;}));render();});
+      a.appendChild(img);a.appendChild(dl);a.appendChild(x);grid.appendChild(a);
+    });
+  }
+  if(clearBtn)clearBtn.addEventListener('click',function(){if(confirm('clear the whole wall? this only clears your browser.')){save([]);render();}});
+  render();
+  return {add:function(url){const a=load();a.unshift({url:url,ts:Date.now()});save(a.slice(0,CAP));render();}};
+})();
+
 /* ================= THE MIRROR — nano banana PFP ================= */
 (function(){
   const dropzone=document.getElementById('dropzone'),fileInput=document.getElementById('fileInput'),stagegrid=document.getElementById('stagegrid');
@@ -496,7 +537,7 @@ function copyCA(){
       api('mog-submit',{method:'POST',body:JSON.stringify({imageUrl:hostedUrl})}).then(function(j){
         const id=j.taskId;let tries=0;(function poll(){if(tries++>75)return retryOrFail(n,'the vision timed out');
           setTimeout(function(){api('mog-status?taskId='+encodeURIComponent(id)).then(function(s){
-            if(s.status==='done'){resultImg.src=s.url;resultImg.onload=function(){done();setStatus('');resultImg.style.display='block';afterCol.classList.add('has');dlBtn.href=s.url;dlBtn.style.display='inline-block';shareBtn.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('the Pit Vipers are on. 🕶 $PITVIPER — the mog glasses stay on. mog everyone outside of SOL.');shareBtn.style.display='inline-block';resetBtn.style.display='inline-block';}; resultImg.onerror=function(){retryOrFail(n,"the vision wouldn't load");};}
+            if(s.status==='done'){resultImg.src=s.url;resultImg.onload=function(){done();setStatus('');resultImg.style.display='block';afterCol.classList.add('has');dlBtn.href=s.url;dlBtn.style.display='inline-block';shareBtn.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('the Pit Vipers are on. 🕶 $PITVIPER — the mog glasses stay on. mog everyone outside of SOL.');shareBtn.style.display='inline-block';resetBtn.style.display='inline-block';try{if(window.MogWall)window.MogWall.add(s.url);}catch(_){}}; resultImg.onerror=function(){retryOrFail(n,"the vision wouldn't load");};}
             else if(s.status==='failed'){retryOrFail(n,s.error||'unknown');}else{poll();}
           }).catch(function(e){retryOrFail(n,e.message);});},4000);})();
       }).catch(function(e){retryOrFail(n,e.message);});
