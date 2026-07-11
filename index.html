@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOLANA PIT VIPERS — The Mog Glasses Stay On</title>
-<meta name="description" content="Solana Pit Vipers ($PITVIPER) — the glasses built to mog every other chain. Bring the memes home to Solana. Not a coin, a cult. Put the Pit Vipers on.">
+<meta name="description" content="Solana Pit Vipers ($VIPERS) — the glasses built to mog every other chain. Bring the memes home to Solana. Not a coin, a cult. Put the Pit Vipers on.">
 <meta property="og:title" content="SOLANA PIT VIPERS — The Mog Glasses Stay On">
 <meta property="og:description" content="The glasses built to mog every other chain. Upload your PFP, put on the Pit Vipers, join the cult.">
 <meta property="og:image" content="img/logo.jpg">
@@ -388,12 +388,12 @@
     <a href="https://x.com/i/communities/1981368758888239311" target="_blank" rel="noopener">𝕏 The Cult</a>
     <a href="https://dexscreener.com/solana/5U3fffY1mfMYFgye6f6RnCSMBSoZKGTtQbVUsyxmpump" target="_blank" rel="noopener">📈 Dexscreener</a>
   </div>
-  <p class="foot-meta">// SOLANA PIT VIPERS ($PITVIPER) is a meme coin &amp; community cult. no intrinsic value, no promises, no roadmap — bring the memes home to Solana. entertainment purposes only, always DYOR. the glasses, however, are very real.<br>◇ SOLANA PIT VIPERS · THE MOG GLASSES STAY ON · MOG EVERYONE OUTSIDE OF SOL ◇</p>
+  <p class="foot-meta">// SOLANA PIT VIPERS ($VIPERS) is a meme coin &amp; community cult. no intrinsic value, no promises, no roadmap — bring the memes home to Solana. entertainment purposes only, always DYOR. the glasses, however, are very real.<br>◇ SOLANA PIT VIPERS · THE MOG GLASSES STAY ON · MOG EVERYONE OUTSIDE OF SOL ◇</p>
 </footer>
 
 <script>
-/* ====== CONFIG — set TOKEN_MINT to the $PITVIPER contract address at launch ====== */
-const TOKEN_MINT = "5U3fffY1mfMYFgye6f6RnCSMBSoZKGTtQbVUsyxmpump";   // $PITVIPER mint
+/* ====== CONFIG — set TOKEN_MINT to the $VIPERS contract address at launch ====== */
+const TOKEN_MINT = "5U3fffY1mfMYFgye6f6RnCSMBSoZKGTtQbVUsyxmpump";   // $VIPERS mint
 /* ================================================================================= */
 if(TOKEN_MINT){const _ca=document.getElementById('ca');if(_ca)_ca.textContent=TOKEN_MINT;}
 
@@ -541,7 +541,7 @@ window.MogWall=(function(){
       api('mog-submit',{method:'POST',body:JSON.stringify({imageUrl:hostedUrl,ratio:uploadRatio})}).then(function(j){
         const id=j.taskId;let tries=0;(function poll(){if(tries++>75)return retryOrFail(n,'the vision timed out');
           setTimeout(function(){api('mog-status?taskId='+encodeURIComponent(id)).then(function(s){
-            if(s.status==='done'){resultImg.src=s.url;resultImg.onload=function(){done();setStatus('');resultImg.style.display='block';afterCol.classList.add('has');dlBtn.href=s.url;dlBtn.style.display='inline-block';shareBtn.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('the Pit Vipers are on. 🕶 $PITVIPER — the mog glasses stay on. mog everyone outside of SOL.');shareBtn.style.display='inline-block';resetBtn.style.display='inline-block';try{if(window.MogWall)window.MogWall.add(s.url);}catch(_){}}; resultImg.onerror=function(){retryOrFail(n,"the vision wouldn't load");};}
+            if(s.status==='done'){resultImg.src=s.url;resultImg.onload=function(){done();setStatus('');resultImg.style.display='block';afterCol.classList.add('has');dlBtn.href=s.url;dlBtn.style.display='inline-block';shareBtn.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('the Pit Vipers are on. 🕶 $VIPERS — the mog glasses stay on. mog everyone outside of SOL.');shareBtn.style.display='inline-block';resetBtn.style.display='inline-block';try{if(window.MogWall)window.MogWall.add(s.url);}catch(_){}}; resultImg.onerror=function(){retryOrFail(n,"the vision wouldn't load");};}
             else if(s.status==='failed'){retryOrFail(n,s.error||'unknown');}else{poll();}
           }).catch(function(e){retryOrFail(n,e.message);});},4000);})();
       }).catch(function(e){retryOrFail(n,e.message);});
