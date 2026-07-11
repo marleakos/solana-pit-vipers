@@ -27,9 +27,11 @@ const PROMPT =
   "that comes down to a sharp point between the eyes. Do NOT invent a different style of glasses, do not use round " +
   "or square lenses — match the reference shape, proportions and colors as closely as possible. Fit them naturally " +
   "over the eyes, following the exact angle, tilt and perspective of the head, resting on the nose and ears at the " +
-  "right size. Change NOTHING else: keep the character's face, expression, species, colors, linework and art style " +
-  "exactly as in the first image, and keep the same framing and background. Output only the edited image. Absolutely " +
-  "no text, letters, numbers, watermarks or logos anywhere.";
+  "right size. On the black top frame of the glasses, print the single brand word \"SOLANA\" in clean white capital " +
+  "letters, centered, spelled exactly S-O-L-A-N-A, just like on the reference glasses. Change NOTHING else: keep the " +
+  "character's face, expression, species, colors, linework and art style exactly as in the first image, and keep the " +
+  "same framing and background. Output only the edited image, with no other text, numbers, watermarks or logos " +
+  "anywhere except the word SOLANA on the frame.";
 
 function getKey() {
   if (process.env.NANOBANANA_API_KEY) return process.env.NANOBANANA_API_KEY.trim();
@@ -72,6 +74,10 @@ exports.handler = async (event) => {
 
   const callback = `https://${(event.headers && (event.headers.host || event.headers.Host)) || "example.com"}/`;
 
+  // output aspect ratio — match the user's upload so it isn't letterboxed/stretched
+  const ALLOWED = ["1:1", "3:4", "4:3", "2:3", "3:2", "9:16", "16:9"];
+  const imageSize = ALLOWED.includes(body.ratio) ? body.ratio : "1:1";
+
   for (const type of ["IMAGETOIAMGE", "IMAGETOIMAGE"]) {
     const res = await fetch(`${API_BASE}/generate`, {
       method: "POST",
@@ -81,6 +87,7 @@ exports.handler = async (event) => {
         type,
         imageUrls: [subject, shadesUrl(event)],
         numImages: 1,
+        image_size: imageSize,
         callBackUrl: callback,
       }),
     });

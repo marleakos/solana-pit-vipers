@@ -499,13 +499,17 @@ window.MogWall=(function(){
   const dropzone=document.getElementById('dropzone'),fileInput=document.getElementById('fileInput'),stagegrid=document.getElementById('stagegrid');
   const beforeImg=document.getElementById('beforeImg'),resultImg=document.getElementById('resultImg'),afterCol=document.getElementById('afterCol');
   const goBtn=document.getElementById('goBtn'),dlBtn=document.getElementById('dlBtn'),shareBtn=document.getElementById('shareBtn'),resetBtn=document.getElementById('resetBtn'),statusEl=document.getElementById('pfpStatus');
-  let userDataUrl=null,busy=false,hostedUrl=null;
+  let userDataUrl=null,busy=false,hostedUrl=null,uploadRatio='1:1';
+  // nearest aspect ratio nano banana supports, so the output matches the upload
+  const RATIOS=[['1:1',1],['3:4',0.75],['4:3',1.3333],['2:3',0.6667],['3:2',1.5],['9:16',0.5625],['16:9',1.7778]];
+  function nearestRatio(w,h){const v=w/h;let best='1:1',bd=1e9;RATIOS.forEach(function(r){const d=Math.abs(r[1]-v);if(d<bd){bd=d;best=r[0];}});return best;}
   const LINES=['reading your face…','sizing the Pit Vipers…','snapping them on…','tuning the mirror lens…','mogging in progress…','almost too cool…','a moment more…'];
   function setStatus(msg,isErr){statusEl.textContent=msg||'';statusEl.className='status'+(isErr?' err':'')+(msg&&!isErr?' cursorblink':'');}
   /* the upload is hosted on our own server now, so we can keep it high quality (no tiny 64KB cap) */
   function prepImage(file){return new Promise(function(res,rej){
     const url=URL.createObjectURL(file),img=new Image();
     img.onload=function(){URL.revokeObjectURL(url);
+      uploadRatio=nearestRatio(img.width,img.height);
       const MAX=1024,scale=Math.min(1,MAX/Math.max(img.width,img.height));
       const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));
       c.getContext('2d').drawImage(img,0,0,c.width,c.height);
@@ -534,7 +538,7 @@ window.MogWall=(function(){
     function transient(m){return /internal error|try again|timeout|502|503|429|no signature|store failed/i.test(m||'');}
 
     function attempt(n){
-      api('mog-submit',{method:'POST',body:JSON.stringify({imageUrl:hostedUrl})}).then(function(j){
+      api('mog-submit',{method:'POST',body:JSON.stringify({imageUrl:hostedUrl,ratio:uploadRatio})}).then(function(j){
         const id=j.taskId;let tries=0;(function poll(){if(tries++>75)return retryOrFail(n,'the vision timed out');
           setTimeout(function(){api('mog-status?taskId='+encodeURIComponent(id)).then(function(s){
             if(s.status==='done'){resultImg.src=s.url;resultImg.onload=function(){done();setStatus('');resultImg.style.display='block';afterCol.classList.add('has');dlBtn.href=s.url;dlBtn.style.display='inline-block';shareBtn.href='https://twitter.com/intent/tweet?text='+encodeURIComponent('the Pit Vipers are on. 🕶 $PITVIPER — the mog glasses stay on. mog everyone outside of SOL.');shareBtn.style.display='inline-block';resetBtn.style.display='inline-block';try{if(window.MogWall)window.MogWall.add(s.url);}catch(_){}}; resultImg.onerror=function(){retryOrFail(n,"the vision wouldn't load");};}
